@@ -1,20 +1,22 @@
 # PulsePlus
 
-PulsePlus is a lightweight, concurrent URL status checker written in Go. It efficiently pings a list of websites to verify their availability and reports their HTTP status codes.
+PulsePlus is a lightweight URL status checker API built with [Go Fiber](https://gofiber.io/). It allows you to check the availability and HTTP status code of a website via a RESTful endpoint.
 
 ## Features
 
-- **Concurrent Checks**: Uses Go routines to check multiple URLs simultaneously for faster execution.
-- **Synchronization**: Utilizes `sync.WaitGroup` to ensure all checks complete before the program exits.
-- **Error Handling**: Includes a helper utility to gracefully handle and log errors with timestamps.
+- **REST API**: Simple and fast HTTP API.
+- **Real-time Checks**: Pings the requested URL and returns its status code.
+- **Error Handling**: Graceful error handling for invalid requests or unreachable URLs.
 
 ## Project Structure
 
 ```
 pulseplus/
-├── main.go           # Entry point: defines URLs and launches concurrent checks
+├── main.go           # Entry point: sets up Fiber app and routes
+├── handlers/
+│   └── ping.go       # Handler for the ping endpoint
 ├── helpers/
-│   └── helpers.go    # Utility functions for error handling
+│   └── helpers.go    # Utility functions
 └── go.mod            # Go module definition
 ```
 
@@ -24,7 +26,7 @@ pulseplus/
 
 - [Go](https://go.dev/dl/) 1.25 or higher
 
-### Running the Application
+### Running the Server
 
 1. Clone the repository:
    ```bash
@@ -32,15 +34,45 @@ pulseplus/
    cd pulseplus
    ```
 
-2. Run the program:
+2. Install dependencies:
+   ```bash
+   go mod tidy
+   ```
+
+3. Start the server:
    ```bash
    go run main.go
    ```
 
-### Example Output
+   The server will start listening on port `3000`.
+
+## API Documentation
+
+### Ping a URL
+
+Checks the status code of a provided URL.
+
+- **Endpoint**: `POST /api/v1/ping`
+- **Content-Type**: `application/json`
+
+#### Request Body
+
+```json
+{
+  "url": "https://github.com"
+}
+```
+
+#### Example Request
+
+```bash
+curl -X POST http://localhost:3000/api/v1/ping \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://github.com"}'
+```
+
+#### Example Response
 
 ```text
 status code for https://github.com is 200
-status code for https://www.linkedin.com is 200
 ```
-*(Note: Output order may vary due to concurrency)*
