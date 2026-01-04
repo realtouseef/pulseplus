@@ -1,37 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"sync"
-
-	"github.com/realtouseef/pulseplus/helpers"
+	"github.com/gofiber/fiber/v2"
+	"github.com/realtouseef/pulseplus/handlers"
 )
-
-var wg sync.WaitGroup
 
 func main() {
 
-	urls := []string{
-		"https://github.com",
-		"https://www.linkedin.com",
-		"https://bloomycorners.com",
-	}
+	app := fiber.New()
+	api := app.Group("/api")
+	v1 := api.Group("/v1")
 
-	for _, url := range urls {
-		wg.Add(1)
-		go ping(url)
-	}
+	v1.Post("/ping", handlers.Ping)
 
-	wg.Wait()
-}
-
-func ping(url string) {
-	response, err := http.Get(url)
-	helpers.HandleError(err)
-
-	fmt.Printf("status code for %v is %v\n", url, response.StatusCode)
-	wg.Done()
-
-	defer response.Body.Close()
+	app.Listen(":3000")
 }
